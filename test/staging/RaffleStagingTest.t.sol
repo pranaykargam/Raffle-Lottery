@@ -31,17 +31,18 @@ contract RaffleTest is StdCheats, Test {
     uint256 public constant STARTING_USER_BALANCE = 10 ether;
 
     function setUp() external {
-        DeployRaffle deployer = new DeployRaffle();
-        (raffle, helperConfig) = deployer.run();
+     DeployRaffle deployer = new DeployRaffle();
+     (raffle, helperConfig) = deployer.deployContract();
+
         vm.deal(PLAYER, STARTING_USER_BALANCE);
 
-        HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
+        HelperConfig.NetworkConfig memory config = helperConfig.getConfigChainId(block.chainid);
         subscriptionId = config.subscriptionId;
         gasLane = config.gasLane;
-        automationUpdateInterval = config.automationUpdateInterval;
-        raffleEntranceFee = config.raffleEntranceFee;
+        automationUpdateInterval = config.interval;
+        raffleEntranceFee = config.entranceFee;
         callbackGasLimit = config.callbackGasLimit;
-        vrfCoordinatorV2_5 = config.vrfCoordinatorV2_5;
+        vrfCoordinatorV2_5 = config.vrfCoordinator;
     }
 
     /////////////////////////

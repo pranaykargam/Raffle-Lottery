@@ -11,7 +11,9 @@ contract DeployRaffle is Script{
 
   function deployContract() public returns(Raffle,HelperConfig){
     HelperConfig helperConfig = new HelperConfig();
-    HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
+    HelperConfig.NetworkConfig memory config =
+    helperConfig.getConfigChainId(block.chainid);
+
     vm.startBroadcast();
     Raffle raffle = new Raffle(
        config.entranceFee,
