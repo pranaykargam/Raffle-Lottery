@@ -9,7 +9,7 @@ import {Test, console} from "forge-std/Test.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {StdCheats} from "forge-std/StdCheats.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
-import {CreateSubscription} from "../../script/Interactions.s.sol";
+// import {CreateSubscription} from "../../script/Interactions.s.sol";
 
 contract RaffleTest is StdCheats, Test {
     /* Errors */
@@ -25,16 +25,16 @@ contract RaffleTest is StdCheats, Test {
     uint256 automationUpdateInterval;
     uint256 raffleEntranceFee;
     uint32 callbackGasLimit;
-    address vrfCoordinatorV2_5;
+    address vrfCoordinatorV25;
 
-    address public PLAYER = makeAddr("player");
+    address public player = makeAddr("player");
     uint256 public constant STARTING_USER_BALANCE = 10 ether;
 
     function setUp() external {
-     DeployRaffle deployer = new DeployRaffle();
-     (raffle, helperConfig) = deployer.deployContract();
+        DeployRaffle deployer = new DeployRaffle();
+        (raffle, helperConfig) = deployer.deployContract();
 
-        vm.deal(PLAYER, STARTING_USER_BALANCE);
+        vm.deal(player, STARTING_USER_BALANCE);
 
         HelperConfig.NetworkConfig memory config = helperConfig.getConfigChainId(block.chainid);
         subscriptionId = config.subscriptionId;
@@ -42,7 +42,7 @@ contract RaffleTest is StdCheats, Test {
         automationUpdateInterval = config.interval;
         raffleEntranceFee = config.entranceFee;
         callbackGasLimit = config.callbackGasLimit;
-        vrfCoordinatorV2_5 = config.vrfCoordinator;
+        vrfCoordinatorV25 = config.vrfCoordinator;
     }
 
     /////////////////////////
@@ -50,7 +50,7 @@ contract RaffleTest is StdCheats, Test {
     ////////////////////////
 
     modifier raffleEntered() {
-        vm.prank(PLAYER);
+        vm.prank(player);
         raffle.enterRaffle{value: raffleEntranceFee}();
         vm.warp(block.timestamp + automationUpdateInterval + 1);
         vm.roll(block.number + 1);
@@ -73,11 +73,11 @@ contract RaffleTest is StdCheats, Test {
         // Act / Assert
         vm.expectRevert("nonexistent request");
         // vm.mockCall could be used here...
-        VRFCoordinatorV2_5Mock(vrfCoordinatorV2_5).fulfillRandomWords(0, address(raffle));
+        VRFCoordinatorV2_5Mock(vrfCoordinatorV25).fulfillRandomWords(0, address(raffle));
 
         vm.expectRevert("nonexistent request");
 
-        VRFCoordinatorV2_5Mock(vrfCoordinatorV2_5).fulfillRandomWords(1, address(raffle));
+        VRFCoordinatorV2_5Mock(vrfCoordinatorV25).fulfillRandomWords(1, address(raffle));
     }
 
     function testFulfillRandomWordsPicksAWinnerResetsAndSendsMoney() public raffleEntered onlyOnDeployedContracts {
@@ -102,7 +102,7 @@ contract RaffleTest is StdCheats, Test {
         Vm.Log[] memory entries = vm.getRecordedLogs();
         bytes32 requestId = entries[1].topics[1]; // get the requestId from the logs
 
-        VRFCoordinatorV2_5Mock(vrfCoordinatorV2_5).fulfillRandomWords(uint256(requestId), address(raffle));
+        VRFCoordinatorV2_5Mock(vrfCoordinatorV25).fulfillRandomWords(uint256(requestId), address(raffle));
 
         // Assert
         address recentWinner = raffle.getRecentWinner();

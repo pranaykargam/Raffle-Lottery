@@ -7,6 +7,7 @@ import {DeployRaffle} from "../../script/DeployRaffle.s.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 
 contract RaffleTest is Test {
+    event RaffleEntered(address indexed player);
     Raffle raffle;
     HelperConfig helperConfig;
 
@@ -22,7 +23,7 @@ contract RaffleTest is Test {
 
     function setUp() external {
         DeployRaffle deployer = new DeployRaffle();
-        (raffle,helperConfig) = deployer.deployContract();
+        (raffle, helperConfig) = deployer.deployContract();
         // HelperConfig.Config memory config = helperConfig.activeNetworkConfig()
         HelperConfig.NetworkConfig memory config = helperConfig.getConfigChainId(block.chainid);
         entranceFee = config.entranceFee;
@@ -32,10 +33,9 @@ contract RaffleTest is Test {
         subscriptionId = config.subscriptionId;
         callbackGasLimit = config.callbackGasLimit;
         vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
-
     }
 
-    function testRaffleInitializesInOpenState() public {
+    function testRaffleInitializesInOpenState() public view {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
     }
 
@@ -43,7 +43,7 @@ contract RaffleTest is Test {
         // Arrange
         vm.prank(PLAYER);
         // Act / Assert
-        vm.expectRevert(Raffle.Raffle.NotEnoughEth.selector);
+        vm.expectRevert(Raffle.NotEnoughEth.selector);
         raffle.enterRaffle();
     }
 
@@ -62,7 +62,8 @@ contract RaffleTest is Test {
         vm.prank(PLAYER);
         // Act / Assert
         vm.expectEmit(true, false, false, false, address(raffle));
-        emit Raffle.RaffleEntered(PLAYER);
+        emit RaffleEntered(PLAYER);
+
         raffle.enterRaffle{value: entranceFee}();
     }
 
@@ -75,7 +76,10 @@ contract RaffleTest is Test {
         raffle.performUpkeep("");
         // Act / Assert
         vm.prank(PLAYER);
-        vm.expectRevert(Raffle.Raffle.Raffle__RaffleNotOpen.selector);
+        // vm.expectRevert(Raffle.Raffle.Raffle__RaffleNotOpen.selector);
+        // vm.expectRevert(Raffle__RaffleNotOpen.selector);
+        vm.expectRevert(Raffle.Raffle__RaffleNotOpen.selector);
+
         raffle.enterRaffle{value: entranceFee}();
     }
 }
