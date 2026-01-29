@@ -1,6 +1,8 @@
 * git status
 git diff
 
+* Raffle.sol = real lottery logic;
+* RaffleTest.t.sol = a separate contract that uses Raffle like an external user to prove it behaves
 
 
 01. git clone https://github.com/Cyfrin/foundry-smart-contract-lottery-cu from cyfrin github repo.
@@ -89,7 +91,9 @@ Status private s_status;
 04. VRF callback (fulfillRandomWords) picks winner, pays out, sets state back to OPEN
 
 
-
+    /*//////////////////////////////////////////////////////////////
+                               CEI METHOD
+    //////////////////////////////////////////////////////////////*/
 ****  `CEI` method is just a safe order for writing functions: 
 first check, then change your own state, and only at the end talk to other contracts or send ETH.
 
@@ -135,6 +139,20 @@ and once 30 minutes have passed and there are players with balance, it triggers 
 // Deploy Script
 // Deploy a mock chainlink VRF
 // Test AND dEploy the l;ottery 
+
+    /*//////////////////////////////////////////////////////////////
+                         INSTALLATION OF HEADERS
+    //////////////////////////////////////////////////////////////*/
+//.  `npm install -g sol-headers`
+//.  `sol-headers "installation of headers"`
+
+
+    /*//////////////////////////////////////////////////////////////
+                          SUBSCRIBING TO EVENTS
+    //////////////////////////////////////////////////////////////*/
+
+    
+
 
 
 
