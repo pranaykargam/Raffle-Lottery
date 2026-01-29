@@ -151,6 +151,19 @@ and once 30 minutes have passed and there are players with balance, it triggers 
                           SUBSCRIBING TO EVENTS
     //////////////////////////////////////////////////////////////*/
 
+created script/interactions
+  `cast sig "createSubscription()"`
+  open.xyz/signatures
+
+
+  // Creating the Subscription UI
+
+      /*//////////////////////////////////////////////////////////////
+                           FUND SUBSCRIPTIONS
+    //////////////////////////////////////////////////////////////*/
+`my account` keystore was saved successfully. Address: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+
+`forge install transmissions11/solmate`
     
 
 
