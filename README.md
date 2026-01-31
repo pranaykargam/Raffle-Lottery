@@ -7,7 +7,7 @@
     enabling users to buy entries and randomly select winners on-chain. 
      It exists to demonstrate secure, automated, and transparent prize draws using Chainlink tooling in a real-world-style dApp.
 
- <img src="../images/Raffle Flow .png" alt="">
+ <img src="./images/Raffle Flow .png" alt="">
 
 ## Setup & configuration ⚙️ 
 
