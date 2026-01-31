@@ -69,8 +69,8 @@ Patrick Collins – for the incredible teaching and inspiration. 💙
 
 ## 🔗 Useful Links
 
-    https://updraft.cyfrin.io/courses/foundry
+ https://updraft.cyfrin.io/courses/foundry
 
-    Patrick Collins on X: https://twitter.com/PatrickAlphaC
+Patrick Collins on X: https://twitter.com/PatrickAlphaC
 
 
