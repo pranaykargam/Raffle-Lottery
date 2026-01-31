@@ -83,7 +83,6 @@ contract RaffleTest is Test {
         raffle.enterRaffle{value: entranceFee}();
     }
 
-
     /*//////////////////////////////////////////////////////////////
                               CHECK UPKEEP
     //////////////////////////////////////////////////////////////*/
@@ -102,18 +101,50 @@ contract RaffleTest is Test {
         // Assert
         assert(raffleState == Raffle.RaffleState.CALCULATING);
         assert(upkeepNeeded == false);
- }
+    }
 
-     /*//////////////////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////
                            FULLFILLRANDOMWORDS
     //////////////////////////////////////////////////////////////*/
 
-   function testFulfillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 randomRequestId) public {
+    function testFulfillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 randomRequestId) public {
         // Arrange
         // Act / Assert
         vm.expectRevert("nonexistent request");
         // vm.mockCall could be used here...
         VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(randomRequestId, address(raffle));
     }
-}
 
+    function testFulfillRandomWordsPicksAWinnerResetsAndSendsMoney() public {
+        // Arrange
+        uint256 numberOfPlayers = 3;
+        for (uint256 i = 0; i < numberOfPlayers; i++) {
+            address player = address(uint160(PLAYER) + i);
+            vm.deal(player, STARTING_PLAYER_BALANCE);
+            vm.prank(player);
+            raffle.enterRaffle{value: entranceFee}();
+        }
+        uint256 startingTimeStamp = raffle.getLastTimeStamp();
+
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number + 1);
+
+        // Act
+        vm.recordLogs();
+        raffle.performUpkeep(""); // emits requestId
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        bytes32 requestId = entries[1].topics[1]; // get the requestId from the logs
+
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(uint256(requestId), address(raffle));
+
+        // Assert
+        address recentWinner = raffle.getRecentWinner();
+        uint256 raffleState = uint256(raffle.getRaffleState());
+        uint256 endingTimeStamp = raffle.getLastTimeStamp();
+        uint256 winnerEndingBalance = recentWinner.balance;
+
+        assert(raffleState == uint256(Raffle.RaffleState.OPEN));
+        assert(endingTimeStamp > startingTimeStamp);
+        assert(winnerEndingBalance == STARTING_PLAYER_BALANCE + (entranceFee * numberOfPlayers));
+    }
+}

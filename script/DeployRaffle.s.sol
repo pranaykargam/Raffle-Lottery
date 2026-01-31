@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import {Script} from "forge-std/Script.sol";
 import {Raffle} from "../src/Raffle.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
-import {CreateSubscription,AddConsumer} from "../script/interactions.s.sol";
+import {CreateSubscription, AddConsumer} from "../script/interactions.s.sol";
 
 contract DeployRaffle is Script {
     function run() public {
@@ -17,7 +17,7 @@ contract DeployRaffle is Script {
 
         if (config.subscriptionId == 0) {
             CreateSubscription createSubscription = new CreateSubscription();
-            (uint256 subscriptionId, ) = createSubscription.createSubscription(config.vrfCoordinator);
+            (uint256 subscriptionId,) = createSubscription.createSubscription(config.vrfCoordinator);
             config.subscriptionId = subscriptionId;
         }
 
@@ -35,12 +35,11 @@ contract DeployRaffle is Script {
             config.callbackGasLimit
         );
 
-
         vm.stopBroadcast();
 
         // add consumer
         AddConsumer addConsumer = new AddConsumer();
-        // dont need of Broadcast here 
+        // dont need of Broadcast here
         addConsumer.addConsumerUsingConfig(address(raffle), config.vrfCoordinator, config.subscriptionId);
         return (raffle, helperConfig);
     }

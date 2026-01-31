@@ -52,7 +52,7 @@ contract HelperConfig is CodeConstants, Script {
             interval: 30,
             vrfCoordinator: 0x5CE8D5A2BC84beb22a398CCA51996F7930313D61,
             gasLane: 0x1770bdc7eec7771f7ba4ffd640f34260d7f095b79c92d34a5b2551d6f6cfd2be,
-            subscriptionId: 13557940721780492232995911419241512491181819446548373209648180088534678505900, // my first subscriptionId 
+            subscriptionId: 13557940721780492232995911419241512491181819446548373209648180088534678505900, // my first subscriptionId
             callbackGasLimit: 500000,
             link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
         });
@@ -64,11 +64,8 @@ contract HelperConfig is CodeConstants, Script {
         }
 
         vm.startBroadcast();
-        VRFCoordinatorV2_5Mock vrfCoordinatorMock = new VRFCoordinatorV2_5Mock(
-            MOCK_BASE_FEE,
-            MOCK_GAS_PRICE_LINK,
-            MOCK_WEI_PER_UNIT_LINK
-        );
+        VRFCoordinatorV2_5Mock vrfCoordinatorMock =
+            new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE_LINK, MOCK_WEI_PER_UNIT_LINK);
         LinkToken linkToken = new LinkToken();
         vm.stopBroadcast();
 

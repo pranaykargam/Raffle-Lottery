@@ -9,16 +9,13 @@ import {HelperConfig} from "./HelperConfig.s.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
 import {DevOpsTools} from "foundry-devops/DevOpsTools.sol";
 
-
-
 // Local constant used only in this script
 uint256 constant ETH_ANVIL_CHAIN_ID = 31337;
 
 contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint256, address) {
         HelperConfig helperConfig = new HelperConfig();
-        HelperConfig.NetworkConfig memory config =
-            helperConfig.getConfigChainId(block.chainid);
+        HelperConfig.NetworkConfig memory config = helperConfig.getConfigChainId(block.chainid);
 
         address vrfCoordinator = config.vrfCoordinator;
 
@@ -26,10 +23,7 @@ contract CreateSubscription is Script {
         return (subId, vrfCoordinator);
     }
 
-    function createSubscription(address vrfCoordinator)
-        public
-        returns (uint256, address)
-    {
+    function createSubscription(address vrfCoordinator) public returns (uint256, address) {
         // console.log("Creating subscription on chainId:", block.chainid);
 
         vm.startBroadcast();
@@ -52,8 +46,7 @@ contract FundSubscription is Script {
 
     function fundSubscriptionUsingConfig() public {
         HelperConfig helperConfig = new HelperConfig();
-        HelperConfig.NetworkConfig memory config =
-            helperConfig.getConfigChainId(block.chainid);
+        HelperConfig.NetworkConfig memory config = helperConfig.getConfigChainId(block.chainid);
 
         address vrfCoordinator = config.vrfCoordinator;
         uint256 subscriptionId = config.subscriptionId;
@@ -61,8 +54,7 @@ contract FundSubscription is Script {
 
         if (subscriptionId == 0) {
             CreateSubscription createSub = new CreateSubscription();
-            (uint256 updatedSubId, address updateVrFv2) =
-                createSub.createSubscriptionUsingConfig();
+            (uint256 updatedSubId, address updateVrFv2) = createSub.createSubscriptionUsingConfig();
 
             subscriptionId = updatedSubId;
             vrfCoordinator = updateVrFv2;
@@ -72,18 +64,14 @@ contract FundSubscription is Script {
         fundSubscription(vrfCoordinator, subscriptionId, linkToken);
     }
 
-    function fundSubscription(
-        address vrfCoordinator,
-        uint256 subscriptionId,
-        address linkToken
-    ) public {
+    function fundSubscription(address vrfCoordinator, uint256 subscriptionId, address linkToken) public {
         // console.log("Funding subscription:", subscriptionId);
         // console.log("Using vrfCoordinator:", vrfCoordinator);
         // console.log("On chainId:", block.chainid);
 
         if (block.chainid == ETH_ANVIL_CHAIN_ID) {
             vm.startBroadcast();
-            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, FUND_AMOUNT);
+            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, FUND_AMOUNT * 100);
             vm.stopBroadcast();
         } else {
             // console.log("LINK balance msg.sender:", LinkToken(linkToken).balanceOf(msg.sender));
@@ -92,11 +80,7 @@ contract FundSubscription is Script {
             // console.log("script address:", address(this));
 
             vm.startBroadcast();
-            LinkToken(linkToken).transferAndCall(
-                vrfCoordinator,
-                FUND_AMOUNT,
-                abi.encode(subscriptionId)
-            );
+            LinkToken(linkToken).transferAndCall(vrfCoordinator, FUND_AMOUNT, abi.encode(subscriptionId));
             vm.stopBroadcast();
         }
     }
@@ -105,40 +89,10 @@ contract FundSubscription is Script {
         fundSubscriptionUsingConfig();
     }
 
-contract AddConsumer is Script {
-    function addConsumerUsingConfig(address consumerAddress) public {
-        HelperConfig helperConfig = new HelperConfig();
-        HelperConfig.NetworkConfig memory config =
-            helperConfig.getConfigChainId(block.chainid);
+    // console.log("Adding consumer to subscription:", subscriptionId);
+    // console.log("Using vrfCoordinator:", vrfCoordinator);
+    // console.log("On chainId:", block.chainid);
 
-        address vrfCoordinator = config.vrfCoordinator;
-        uint256 subscriptionId = config.subscriptionId;
-
-        addConsumer(vrfCoordinator, subscriptionId, consumerAddress);
-    }
-
-    function addConsumer(
-        address vrfCoordinator,
-        uint256 subscriptionId,
-        address consumerAddress
-    ) public {
-        // console.log("Adding consumer to subscription:", subscriptionId);
-        // console.log("Using vrfCoordinator:", vrfCoordinator);
-        // console.log("On chainId:", block.chainid);
-
-        vm.startBroadcast();
-        VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(subscriptionId, consumerAddress);
-        vm.stopBroadcast();
-    }
-
-    function run() external {
-        // Replace with your deployed Raffle contract address
-        address raffleContractAddress = DevOpsTools.get_most_recent_deployment_address(
-            "Raffle Lottery",
-            block.chainid
-        );
-        addConsumerUsingConfig(raffleContractAddress);
-    }
-}
+    // Replace with your deployed Raffle contract address
 }
 
