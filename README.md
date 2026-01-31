@@ -3,7 +3,10 @@
 
 ## Overview
 
-    This project implements a decentralized raffle lottery smart contract using Solidity and Foundry, enabling users to buy entries and randomly select winners on-chain.  It exists to demonstrate secure, automated, and transparent prize draws using Chainlink tooling in a real-world-style dApp.
+    This project implements a decentralized raffle lottery smart contract using Solidity and Foundry, 
+    enabling users to buy entries and randomly select winners on-chain. 
+     It exists to demonstrate secure, automated, and transparent prize draws using Chainlink tooling in a real-world-style dApp.
+
  <img src="../images/Raffle Flow .png" alt="">
 
 ## Setup & configuration ⚙️ 
@@ -69,10 +72,5 @@ Patrick Collins – for the incredible teaching and inspiration. 💙
     https://updraft.cyfrin.io/courses/foundry
 
     Patrick Collins on X: https://twitter.com/PatrickAlphaC
-
-
-
-
-
 
 
