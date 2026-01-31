@@ -9,6 +9,7 @@ import {Test, console} from "forge-std/Test.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {StdCheats} from "forge-std/StdCheats.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+
 // import {CreateSubscription} from "../../script/Interactions.s.sol";
 
 contract RaffleTest is StdCheats, Test {
@@ -76,7 +77,6 @@ contract RaffleTest is StdCheats, Test {
         VRFCoordinatorV2_5Mock(vrfCoordinatorV25).fulfillRandomWords(0, address(raffle));
 
         vm.expectRevert("nonexistent request");
-
         VRFCoordinatorV2_5Mock(vrfCoordinatorV25).fulfillRandomWords(1, address(raffle));
     }
 

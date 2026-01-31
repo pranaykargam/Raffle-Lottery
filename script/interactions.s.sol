@@ -4,9 +4,12 @@ pragma solidity ^0.8.19;
 import {Script} from "forge-std/Script.sol";
 // import {console} from "forge-std/Console.sol";
 // import {Raffle} from "../src/Raffle.sol";
-import {HelperConfig} from "./HelperConfig.s.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {HelperConfig} from "./HelperConfig.s.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
+import {DevOpsTools} from "foundry-devops/DevOpsTools.sol";
+
+
 
 // Local constant used only in this script
 uint256 constant ETH_ANVIL_CHAIN_ID = 31337;
@@ -101,4 +104,41 @@ contract FundSubscription is Script {
     function run() public {
         fundSubscriptionUsingConfig();
     }
+
+contract AddConsumer is Script {
+    function addConsumerUsingConfig(address consumerAddress) public {
+        HelperConfig helperConfig = new HelperConfig();
+        HelperConfig.NetworkConfig memory config =
+            helperConfig.getConfigChainId(block.chainid);
+
+        address vrfCoordinator = config.vrfCoordinator;
+        uint256 subscriptionId = config.subscriptionId;
+
+        addConsumer(vrfCoordinator, subscriptionId, consumerAddress);
+    }
+
+    function addConsumer(
+        address vrfCoordinator,
+        uint256 subscriptionId,
+        address consumerAddress
+    ) public {
+        // console.log("Adding consumer to subscription:", subscriptionId);
+        // console.log("Using vrfCoordinator:", vrfCoordinator);
+        // console.log("On chainId:", block.chainid);
+
+        vm.startBroadcast();
+        VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(subscriptionId, consumerAddress);
+        vm.stopBroadcast();
+    }
+
+    function run() external {
+        // Replace with your deployed Raffle contract address
+        address raffleContractAddress = DevOpsTools.get_most_recent_deployment_address(
+            "Raffle Lottery",
+            block.chainid
+        );
+        addConsumerUsingConfig(raffleContractAddress);
+    }
 }
+}
+
